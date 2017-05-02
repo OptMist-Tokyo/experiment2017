@@ -2,4 +2,6 @@
 *.swp
 __pycache__/
 memo.txt
-.DS_Store
+*.jpg
+hoge.py
+fuga.py
