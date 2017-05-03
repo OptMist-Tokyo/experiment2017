@@ -21,10 +21,11 @@ class StreamListener(tweepy.StreamListener):
                 img = Image.open('reply_img.jpg')
                 gray_img = img.convert('L')
                 gray_img.save('gray_img.jpg')
-                message = '@' + status.author.screen_name + " 画像を変換しました " + time
+                message = '@' + status.author.screen_name + " 画像を変換しました\n" + time
                 api.update_with_media(filename = "gray_img.jpg", status = message, in_reply_to_screen_id = status.id)
             else:
-                message = '@' + status.author.screen_name +" リプライを受け取りました " + time
+                #受け取ったリプライをそのまま返す
+                message = '@' + status.author.screen_name + " " +status.text.replace('@'+myscreen_name,"") + "\n" + time
                 api.update_status(status = message, in_reply_to_status_id = status.id )
     def on_event(self, event):
         if event.event == 'follow':
@@ -35,7 +36,7 @@ class StreamListener(tweepy.StreamListener):
                 api.create_friendship(source_user["id"])
                 now = datetime.datetime.now()
                 time = now.strftime("%H:%M:%S")
-                message = '@'+source_user["screen_name"]+" フォローしました " + time
+                message = '@'+source_user["screen_name"]+" フォローしました\n" + time
                 api.update_status(message)
 
 
