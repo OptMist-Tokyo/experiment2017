@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
 """
 DHT11 Python library
 Copyright (c) 2016 Zoltan Szarvas
