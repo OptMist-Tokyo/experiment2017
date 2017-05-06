@@ -14,8 +14,13 @@ GPIO.cleanup()
 instance = dht11.DHT11(pin=4)
 api = init.api
 
+num = 1
 while True:
     result = instance.read()
+    num += 1
+    if num > 20:
+        api.update_status("気温の取得に失敗しました")
+        break
     if result.is_valid():
         now = datetime.datetime.now()
         time = now.strftime("%H:%M:%S")
