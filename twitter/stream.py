@@ -10,7 +10,7 @@ from PIL import Image
 
 class StreamListener(tweepy.StreamListener):
     def on_status(self, status):
-        if status.in_reply_to_screen_name == myscreen_name:
+        if status.in_reply_to_screen_name == myscreen_name and status.author.screen_name != myscreen_name:
             print("replied by " + status.author.screen_name)
             now = datetime.datetime.now()
             time = now.strftime("%H:%M:%S")
