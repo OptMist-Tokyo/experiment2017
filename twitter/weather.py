@@ -9,7 +9,7 @@ def get_weather():
     yql_query = "select * from weather.forecast where woeid = 1118370"
     #yql_query = "select * from weather.forecast where woeid in (select woeid from geo.places(1) where text=\"tokyo \")"
     yql_url = baseurl + urllib.parse.urlencode({'q':yql_query}) + "&format=json"
-    result = urllib.request.urlopen(yql_url).read()
+    result = urllib.request.urlopen(yql_url).read().decode('utf-8')
     data = json.loads(result)
     return data
 
