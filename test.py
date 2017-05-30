@@ -9,6 +9,7 @@ import numpy as np
 import os
 import tweepy
 import sys
+import sys
 sys.path.append('./twitter/')
 import init
 import datetime
@@ -18,14 +19,11 @@ api = init.api
 #print mp4_path
 #cap = cv2.VideoCapture(mp4_path)
 peopleinroom=0          #部屋の人数
-peopleinscreen=0
 preexist=1              #画像内に人がいることを示すフラグ
 j=0                     #動画の最初だけを区別するための処置
 j0=0                    #butttaigaugoitatokinidousawohazimeruhuragu
 mirror=False
 size=None
-delta=50                #radiaus of human
-humanxs=[]
 """Capture video from camera"""
 # カメラをキャプチャする
 cap = cv2.VideoCapture(0) # 0はカメラのデバイス番号
@@ -64,14 +62,11 @@ while(cap.isOpened()):
             continue
         j+=1
         if j==300:
-            j=1
+            j=0
             now = datetime.datetime.now()
             time = now.strftime("%H:%M:%S")
             message = "現在の人数は"+str(peopleinroom)+"人です"+"\n"+time
             api.update_status(message)
-            #f = open('text.txt', 'w') # 書き込みモードで開く
-            #f.writelines(str(peopleinroom)) # シーケンスが引数。
-            #f.close()
         # フレームを表示する
         #cv2.imshow('camera capture', frame)
 
@@ -100,60 +95,26 @@ while(cap.isOpened()):
         if np.mean(img_dst)>3:      #画像内に人がいる場合
             #モーメントから人の位置を求める
             M=cv2.moments(img_dst)
-            meanx = int(M['m10']/M['m00'])     #人の中心座標
-            meany = int(M['m01']/M['m00'])
-            variance=int(M['m20']/M['m00']-(M['m10']/M['m00'])**2)
-            #print 'variance:',variance
-
-            if variance>(2*delta)**2:       #if humaninscreen=2
-                humanxr=int(meanx+((variance-delta**2)/2)**0.5)
-                humanxl=int(meanx-((variance-delta**2)/2)**0.5)
-                #print humanxr,humanxl
-
-                if peopleinscreen==1:
-                    if math.fabs(prehumanx-humanxr)<math.fabs(prehumanx-humanxl):
-                        newx=humanxr
-                    else:
-                        newx=humanxl
-                    if newx>300: #and humany<350 and humany>150:    #ドアから人が出てきた時
-                        peopleinroom+=1
-                        print(peopleinroom)
-                        print ('Entrance',newx)
-                    img_dst=cv2.circle(img_dst, (humanxr,meany), 20, (255, 0, 0), -1)
-                    img_dst=cv2.circle(img_dst, (humanxl,meany), 20, (255, 0, 0), -1)
-                peopleinscreen=2
-
-            else:
-                if peopleinscreen==2:
-                    if math.fabs(meanx-humanxr)<math.fabs(meanx-humanxl):
-                        oldx=humanxl
-                    else:
-                        oldx=humanxr
-                    if oldx>300: #and humany<350 and humany>150:    #ドアから人が入っていった時
-                        peopleinroom-=1
-                        print(peopleinroom)
-                        print('Vanish  ',meanx,meany)
-                if preexist==0:
-                    if meanx>300: #and humany<350 and humany>150:    #ドアから人が出てきた時
-                        peopleinroom+=1
-                        print(peopleinroom)
-                    print('Entrance',meanx,meany)
-                    img_dst=cv2.circle(img_dst, (meanx,meany), 20, (255, 0, 0), -1)
-                peopleinscreen=1
-                prehumanx=meanx
-                preexist=1
+            humanx = int(M['m10']/M['m00'])     #人の中心座標
+            humany = int(M['m01']/M['m00'])
+            if preexist==0:
+                if humanx>300: #and humany<350 and humany>150:    #ドアから人が出てきた時
+                    peopleinroom+=1
+                    print(peopleinroom)
+                print('Entrance',humanx,humany)
+            img_dst=cv2.circle(img_dst, (humanx,humany), 20, (255, 0, 0), -1)
+            preexist=1
         else:                       #画像内に人がいない場合
-            peopleinscreen=0
             if j0==0:
                 j0=1
                 preexist=0
                 continue
 
             if preexist==1:
-                if meanx>300: #and humany<350 and humany>150:    #ドアから人が入っていった時
+                if humanx>300: #and humany<350 and humany>150:    #ドアから人が入っていった時
                     peopleinroom-=1
                     print(peopleinroom)
-                print('Vanish  ',meanx,meany)
+                print('Vanish  ',humanx,humany)
             preexist=0
 
         # 表示
