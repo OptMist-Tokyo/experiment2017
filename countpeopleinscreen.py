@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-# -*- coding: UTF-8 -*-
-
 
 import cv2
 import math
