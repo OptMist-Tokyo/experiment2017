@@ -1,9 +1,0 @@
-capture/*
-!.gitkeep
-
-rawdata/*
-!.gitkeep
-
-*.MOV
-*.png
-*.jpg
